@@ -90,6 +90,35 @@ async function connectLocalNode() {
   await finishConnection();
 }
 
+async function connectManualWallet() {
+  const rpcUrl = document.getElementById("manualRpcUrl").value.trim();
+  const privateKey = document.getElementById("manualPrivateKey").value.trim();
+
+  if (!rpcUrl) {
+    throw new Error("Enter manual RPC URL.");
+  }
+
+  if (!privateKey) {
+    throw new Error("Enter private key for manual wallet connection.");
+  }
+
+  provider = new ethers.JsonRpcProvider(rpcUrl);
+  signer = new ethers.Wallet(privateKey, provider);
+  mode = "manual";
+  localAccounts = [];
+
+  const address = await signer.getAddress();
+  accountEl.textContent = `Wallet: ${address}`;
+  log(`Connected manual wallet ${address}`);
+
+  const network = await provider.getNetwork();
+  log(
+    `Network chainId=${network.chainId.toString()} via manual RPC ${rpcUrl}.`,
+  );
+
+  await finishConnection();
+}
+
 async function ensureConnected() {
   if (!signer || !provider || !contractFactory) {
     await connectLocalNode();
@@ -209,6 +238,12 @@ async function switchOwner() {
     return;
   }
 
+  if (mode === "manual") {
+    throw new Error(
+      "Manual wallet mode uses one private key. Enter another key and reconnect to switch.",
+    );
+  }
+
   if (!window.ethereum) {
     throw new Error("MetaMask is required in this mode.");
   }
@@ -230,11 +265,26 @@ async function safe(action) {
 
 async function setDefaultOwners() {
   await ensureConnected();
-  const accounts = await provider.send("eth_accounts", []);
+  let accounts = [];
+  try {
+    accounts = await provider.send("eth_accounts", []);
+  } catch {
+    accounts = [];
+  }
+
+  if (!accounts.length && signer) {
+    accounts = [await signer.getAddress()];
+  }
+
+  if (!accounts.length) {
+    log("No accounts discovered automatically. Enter owners manually.");
+    return;
+  }
+
   const defaults = accounts.slice(0, 3);
   document.getElementById("owners").value = defaults.join(", ");
   document.getElementById("to").value = accounts[3] || "";
-  log("Loaded default Hardhat accounts into form.");
+  log("Loaded default account values into form.");
 }
 
 document
@@ -243,6 +293,9 @@ document
 document
   .getElementById("connectLocalBtn")
   .addEventListener("click", () => safe(connectLocalNode));
+document
+  .getElementById("connectManualBtn")
+  .addEventListener("click", () => safe(connectManualWallet));
 document
   .getElementById("deployBtn")
   .addEventListener("click", () => safe(deployContract));
