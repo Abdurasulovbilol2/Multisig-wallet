@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BasicMultiSig Local UI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #f6f7fb;
+        --surface: #ffffff;
+        --text: #101828;
+        --muted: #475467;
+        --accent: #0b7285;
+        --accent-2: #f59f00;
+        --border: #d0d5dd;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        background: radial-gradient(circle at 20% 0%, #e6fcf5 0%, var(--bg) 40%), var(--bg);
+        color: var(--text);
+      }
+      .wrap { max-width: 1000px; margin: 28px auto; padding: 0 16px 40px; }
+      h1 { margin: 0 0 8px; font-size: 2rem; }
+      .subtitle { margin: 0 0 20px; color: var(--muted); }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 14px;
+        box-shadow: 0 8px 20px rgba(16, 24, 40, 0.05);
+      }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      @media (max-width: 800px) { .row { grid-template-columns: 1fr; } }
+      label { display: block; font-size: 0.9rem; margin-bottom: 4px; color: var(--muted); }
+      input, textarea, button {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-family: inherit;
+        font-size: 0.95rem;
+      }
+      textarea { min-height: 86px; resize: vertical; }
+      button {
+        cursor: pointer;
+        background: linear-gradient(90deg, var(--accent), #1098ad);
+        color: white;
+        border: none;
+        font-weight: 700;
+      }
+      button.alt { background: linear-gradient(90deg, var(--accent-2), #fab005); color: #2b1d00; }
+      button.ghost { background: white; color: var(--text); border: 1px solid var(--border); }
+      .inline { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; word-break: break-all; }
+      #log {
+        background: #0f172a;
+        color: #e2e8f0;
+        min-height: 160px;
+        border-radius: 10px;
+        padding: 12px;
+        overflow: auto;
+        font-size: 0.9rem;
+      }
+      .pill { display: inline-block; padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border); color: var(--muted); font-size: 0.85rem; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>BasicMultiSig Local Browser UI</h1>
+      <p class="subtitle">Run your contract.</p>
+
+      <div class="card">
+        <div class="row">
+          <div>
+            <span class="pill">Step 1: Connect Wallet</span>
+            <p id="account" class="mono">Wallet: not connected</p>
+          </div>
+          <div>
+            <span class="pill">Network should be localhost:8545</span>
+            <div class="row" style="margin-top:10px;">
+              <button id="connectBtn">Connect MetaMask</button>
+              <button id="connectLocalBtn" class="ghost">Connect Local Node</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="pill">Step 2: Deploy Contract</span>
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label for="owners">Owners (comma-separated addresses)</label>
+            <textarea id="owners"></textarea>
+          </div>
+          <div>
+            <label for="threshold">Required approvals</label>
+            <input id="threshold" type="number" min="1" value="2" />
+            <div style="height:10px;"></div>
+            <button id="deployBtn">Deploy BasicMultiSig</button>
+          </div>
+        </div>
+        <p id="contractAddress" class="mono">Contract: not deployed</p>
+      </div>
+
+      <div class="card">
+        <span class="pill">Step 3: Actions</span>
+        <div class="row" style="margin-top:10px;">
+          <div class="inline">
+            <div>
+              <label for="fundEth">Fund contract (ETH)</label>
+              <input id="fundEth" value="1.0" />
+            </div>
+            <button id="fundBtn">Fund</button>
+          </div>
+          <div class="inline">
+            <div>
+              <label for="txIdRefresh">Tx Id to inspect</label>
+              <input id="txIdRefresh" value="0" />
+            </div>
+            <button id="refreshBtn" class="ghost">Refresh Tx</button>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label for="to">Submit: recipient</label>
+            <input id="to" placeholder="0x..." />
+          </div>
+          <div>
+            <label for="valueEth">Submit: value (ETH)</label>
+            <input id="valueEth" value="0.1" />
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label for="data">Submit: data (hex)</label>
+            <input id="data" value="0x" />
+          </div>
+          <div>
+            <label for="submitTxId">Approve/Execute txId</label>
+            <input id="submitTxId" value="0" />
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <button id="submitBtn" class="alt">Submit Transaction</button>
+          <button id="approveBtn">Approve Transaction</button>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <button id="executeBtn">Execute Transaction</button>
+          <button id="switchOwnerBtn" class="ghost">Switch Active Account</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="pill">Logs</span>
+        <pre id="log"></pre>
+      </div>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "new-folder",
+  "version": "1.0.0",
+  "description": "This project demonstrates a basic Solidity multi-signature wallet using M-of-N authorization.",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "node": "hardhat node",
+    "ui": "npx http-server . -p 5500 -c-1",
+    "run:multisig": "hardhat run scripts/run-multisig.js",
+    "test": "hardhat test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.2",
+    "hardhat": "^2.28.6"
+  }
+}
