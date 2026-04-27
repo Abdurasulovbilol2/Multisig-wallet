@@ -88,10 +88,13 @@
               <button id="connectLocalBtn" class="ghost">Connect Local Node</button>
             </div>
             <div style="height:10px;"></div>
-            <label for="manualRpcUrl">Manual RPC URL</label>
-            <input id="manualRpcUrl" value="http://127.0.0.1:8545" />
+            <label for="manualRpcUrl">Manual RPC URL (optional)</label>
+            <input id="manualRpcUrl" value="http://127.0.0.1:8545" placeholder="http://127.0.0.1:8545" />
             <div style="height:8px;"></div>
-            <label for="manualPrivateKey">Manual private key</label>
+            <label for="manualAddress">Manual wallet address (unlocked node)</label>
+            <input id="manualAddress" placeholder="0x..." />
+            <div style="height:8px;"></div>
+            <label for="manualPrivateKey">Manual private key (alternative)</label>
             <input id="manualPrivateKey" type="password" placeholder="0x..." />
             <div style="height:10px;"></div>
             <button id="connectManualBtn" class="ghost">Connect Manual Wallet</button>

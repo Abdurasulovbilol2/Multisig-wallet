@@ -91,20 +91,43 @@ async function connectLocalNode() {
 }
 
 async function connectManualWallet() {
-  const rpcUrl = document.getElementById("manualRpcUrl").value.trim();
+  let rpcUrl = document.getElementById("manualRpcUrl").value.trim();
+  let manualAddress = document.getElementById("manualAddress").value.trim();
   const privateKey = document.getElementById("manualPrivateKey").value.trim();
 
   if (!rpcUrl) {
-    throw new Error("Enter manual RPC URL.");
+    rpcUrl = "http://127.0.0.1:8545";
   }
 
-  if (!privateKey) {
-    throw new Error("Enter private key for manual wallet connection.");
+  // Recover from common input mistake: wallet address pasted into RPC field.
+  if (ethers.isAddress(rpcUrl) && !manualAddress) {
+    manualAddress = rpcUrl;
+    rpcUrl = "http://127.0.0.1:8545";
+    document.getElementById("manualAddress").value = manualAddress;
+    document.getElementById("manualRpcUrl").value = rpcUrl;
+    log("Detected wallet address in RPC field. Moved it to manual address.");
+  }
+
+  if (!privateKey && !manualAddress) {
+    throw new Error(
+      "Enter manual wallet address (unlocked node) or private key.",
+    );
   }
 
   provider = new ethers.JsonRpcProvider(rpcUrl);
-  signer = new ethers.Wallet(privateKey, provider);
-  mode = "manual";
+
+  if (privateKey) {
+    signer = new ethers.Wallet(privateKey, provider);
+    mode = "manual";
+  } else {
+    if (!ethers.isAddress(manualAddress)) {
+      throw new Error("Manual wallet address is invalid.");
+    }
+
+    signer = await provider.getSigner(manualAddress);
+    mode = "manual-address";
+  }
+
   localAccounts = [];
 
   const address = await signer.getAddress();
@@ -238,9 +261,9 @@ async function switchOwner() {
     return;
   }
 
-  if (mode === "manual") {
+  if (mode === "manual" || mode === "manual-address") {
     throw new Error(
-      "Manual wallet mode uses one private key. Enter another key and reconnect to switch.",
+      "Manual mode uses one selected account. Enter another address/key and reconnect to switch.",
     );
   }
 
