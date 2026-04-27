@@ -68,6 +68,7 @@
         font-size: 0.9rem;
       }
       .pill { display: inline-block; padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border); color: var(--muted); font-size: 0.85rem; }
+      .hint { margin: 8px 0 0; color: var(--muted); font-size: 0.88rem; line-height: 1.45; }
     </style>
   </head>
   <body>
@@ -87,17 +88,18 @@
               <button id="connectBtn">Connect MetaMask</button>
               <button id="connectLocalBtn" class="ghost">Connect Local Node</button>
             </div>
+            <p class="hint">For Hardhat local node, click Connect Local Node or paste one unlocked wallet address below. A private key is not required for unlocked local accounts.</p>
             <div style="height:10px;"></div>
             <label for="manualRpcUrl">Manual RPC URL (optional)</label>
             <input id="manualRpcUrl" value="http://127.0.0.1:8545" placeholder="http://127.0.0.1:8545" />
             <div style="height:8px;"></div>
-            <label for="manualAddress">Manual wallet address (unlocked node)</label>
-            <input id="manualAddress" placeholder="0x..." />
+            <label for="manualAddress">Wallet address for local unlocked account</label>
+            <input id="manualAddress" placeholder="Paste a Hardhat account address, for example 0x..." />
             <div style="height:8px;"></div>
-            <label for="manualPrivateKey">Manual private key (alternative)</label>
+            <label for="manualPrivateKey">Private key (only if the RPC account is locked)</label>
             <input id="manualPrivateKey" type="password" placeholder="0x..." />
             <div style="height:10px;"></div>
-            <button id="connectManualBtn" class="ghost">Connect Manual Wallet</button>
+            <button id="connectManualBtn" class="ghost">Connect By Address Or Key</button>
           </div>
         </div>
       </div>

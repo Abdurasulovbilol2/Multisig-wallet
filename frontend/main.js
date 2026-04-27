@@ -12,6 +12,7 @@ let localAccountIndex = 0;
 const accountEl = document.getElementById("account");
 const contractAddressEl = document.getElementById("contractAddress");
 const logEl = document.getElementById("log");
+const manualAddressEl = document.getElementById("manualAddress");
 
 function log(message) {
   const line = `[${new Date().toLocaleTimeString()}] ${message}`;
@@ -79,6 +80,7 @@ async function connectLocalNode() {
   localAccountIndex = 0;
   signer = await provider.getSigner(localAccounts[localAccountIndex]);
   mode = "local";
+  manualAddressEl.value = localAccounts[localAccountIndex];
 
   const address = await signer.getAddress();
   accountEl.textContent = `Wallet: ${address}`;
@@ -307,6 +309,9 @@ async function setDefaultOwners() {
   const defaults = accounts.slice(0, 3);
   document.getElementById("owners").value = defaults.join(", ");
   document.getElementById("to").value = accounts[3] || "";
+  if (!manualAddressEl.value && accounts[0]) {
+    manualAddressEl.value = accounts[0];
+  }
   log("Loaded default account values into form.");
 }
 
