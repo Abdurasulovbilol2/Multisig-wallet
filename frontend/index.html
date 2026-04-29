@@ -3,176 +3,405 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BasicMultiSig Local UI</title>
+    <!-- <title>BasicMultiSig Web Interface</title> -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
-        --bg: #f6f7fb;
+        --bg-top: #edf6ff;
+        --bg-bottom: #f8f3ff;
         --surface: #ffffff;
-        --text: #101828;
-        --muted: #475467;
-        --accent: #0b7285;
-        --accent-2: #f59f00;
-        --border: #d0d5dd;
+        --text: #0f2342;
+        --muted: #5b6d86;
+        --teal: #0a8f9b;
+        --teal-dark: #0a7682;
+        --gold: #f0ad17;
+        --gold-dark: #d8950f;
+        --line: #b6cce8;
+        --soft-line: #d9e4f3;
       }
-      * { box-sizing: border-box; }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         margin: 0;
-        font-family: "Space Grotesk", sans-serif;
-        background: radial-gradient(circle at 20% 0%, #e6fcf5 0%, var(--bg) 40%), var(--bg);
+        font-family: "Manrope", sans-serif;
         color: var(--text);
+        background:
+          radial-gradient(circle at 12% 10%, rgba(137, 207, 255, 0.25), transparent 36%),
+          radial-gradient(circle at 88% 8%, rgba(189, 176, 255, 0.22), transparent 38%),
+          linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
       }
-      .wrap { max-width: 1000px; margin: 28px auto; padding: 0 16px 40px; }
-      h1 { margin: 0 0 8px; font-size: 2rem; }
-      .subtitle { margin: 0 0 20px; color: var(--muted); }
-      .card {
+
+      .wrap {
+        max-width: 900px;
+        margin: 16px auto;
+        padding: 0 12px 20px;
+      }
+
+      .shell {
         background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 16px;
-        margin-bottom: 14px;
-        box-shadow: 0 8px 20px rgba(16, 24, 40, 0.05);
+        border: 2px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 12px 28px rgba(26, 58, 109, 0.11);
+        padding: 10px;
       }
-      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-      @media (max-width: 800px) { .row { grid-template-columns: 1fr; } }
-      label { display: block; font-size: 0.9rem; margin-bottom: 4px; color: var(--muted); }
-      input, textarea, button {
-        width: 100%;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 10px 12px;
-        font-family: inherit;
+
+      .title {
+        margin: 0 0 10px;
+        text-align: center;
+        font-size: clamp(1.25rem, 1.95vw, 1.5rem);
+        font-weight: 800;
+      }
+
+      .subtitle {
+        text-align: center;
         font-size: 0.95rem;
-      }
-      textarea { min-height: 86px; resize: vertical; }
-      button {
-        cursor: pointer;
-        background: linear-gradient(90deg, var(--accent), #1098ad);
-        color: white;
-        border: none;
+        margin: -8px 0 10px;
+        color: #3d5e88;
         font-weight: 700;
       }
-      button.alt { background: linear-gradient(90deg, var(--accent-2), #fab005); color: #2b1d00; }
-      button.ghost { background: white; color: var(--text); border: 1px solid var(--border); }
-      .inline { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
-      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; word-break: break-all; }
-      #log {
-        background: #0f172a;
-        color: #e2e8f0;
-        min-height: 160px;
+
+      .panel {
+        border: 2px solid var(--line);
         border-radius: 10px;
-        padding: 12px;
-        overflow: auto;
-        font-size: 0.9rem;
+        background: linear-gradient(180deg, #ffffff, #f9fbff);
+        padding: 9px;
+        margin-bottom: 8px;
       }
-      .pill { display: inline-block; padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border); color: var(--muted); font-size: 0.85rem; }
-      .hint { margin: 8px 0 0; color: var(--muted); font-size: 0.88rem; line-height: 1.45; }
+
+      .step {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #2b4d74;
+        margin-bottom: 6px;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      label {
+        font-size: 0.76rem;
+        color: #3b5a81;
+        font-weight: 700;
+      }
+
+      .note {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+
+      input,
+      textarea,
+      button {
+        width: 100%;
+        border: 1px solid var(--soft-line);
+        border-radius: 7px;
+        padding: 7px 9px;
+        font: inherit;
+      }
+
+      input,
+      textarea {
+        background: #fff;
+        font-size: 0.82rem;
+      }
+
+      textarea {
+        min-height: 52px;
+        resize: vertical;
+      }
+
+      .mono {
+        margin: 4px 0 0;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 0.72rem;
+        color: #355379;
+        word-break: break-all;
+      }
+
+      .row-action {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 6px;
+        align-items: end;
+      }
+
+      button {
+        cursor: pointer;
+        font-weight: 700;
+        transition: transform 0.12s ease;
+        font-size: 0.8rem;
+        min-height: 34px;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+      }
+
+      .btn-teal {
+        color: #fff;
+        border-color: #0a6b74;
+        background: linear-gradient(180deg, var(--teal), var(--teal-dark));
+      }
+
+      .btn-white {
+        color: #173b64;
+        background: #fff;
+      }
+
+      .btn-gold {
+        color: #342300;
+        border-color: #bf8410;
+        background: linear-gradient(180deg, var(--gold), var(--gold-dark));
+      }
+
+      .btn-wide {
+        min-height: 36px;
+      }
+
+      .advanced {
+        margin-top: 8px;
+        border-top: 1px dashed var(--soft-line);
+        padding-top: 8px;
+      }
+
+      .advanced details {
+        border: 1px solid var(--soft-line);
+        border-radius: 8px;
+        padding: 6px 8px;
+        background: #fbfdff;
+      }
+
+      .advanced summary {
+        cursor: pointer;
+        color: #2c4f76;
+        font-size: 0.76rem;
+        font-weight: 700;
+        list-style: none;
+      }
+
+      .advanced summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .advanced summary::before {
+        content: "+ ";
+        color: #315983;
+      }
+
+      .advanced details[open] summary::before {
+        content: "- ";
+      }
+
+      .advanced-title {
+        margin: 0 0 8px;
+        font-size: 0.78rem;
+        color: #2b4d74;
+        font-weight: 700;
+      }
+
+      .quick-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .quick-card {
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        background: #f8fbff;
+        color: #1a456d;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-align: center;
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .quick-icon {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid #7ea4cf;
+        background: linear-gradient(180deg, #ffffff, #edf4ff);
+        flex: 0 0 auto;
+      }
+
+      #log {
+        margin: 0;
+        min-height: 105px;
+        max-height: 180px;
+        overflow: auto;
+        border: 2px solid #133554;
+        border-radius: 10px;
+        background: #112a45;
+        color: #e8f3ff;
+        padding: 10px;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 0.72rem;
+        line-height: 1.35;
+      }
+
+      @media (max-width: 780px) {
+        .grid-2,
+        .quick-grid {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="wrap">
-      <h1>BasicMultiSig Local Browser UI</h1>
-      <p class="subtitle">Run your contract.</p>
+      <div class="shell">
+        <h1 class="title">BasicMultiSig Wallet</h1>
+        <p class="subtitle">(Web Interface)</p>
 
-      <div class="card">
-        <div class="row">
-          <div>
-            <span class="pill">Step 1: Connect Wallet</span>
-            <p id="account" class="mono">Wallet: not connected</p>
-          </div>
-          <div>
-            <span class="pill">Network should be localhost:8545</span>
-            <div class="row" style="margin-top:10px;">
-              <button id="connectBtn">Connect MetaMask</button>
-              <button id="connectLocalBtn" class="ghost">Connect Local Node</button>
-            </div>
-            <p class="hint">For Hardhat local node, click Connect Local Node or paste one unlocked wallet address below. A private key is not required for unlocked local accounts.</p>
-            <div style="height:10px;"></div>
-            <label for="manualRpcUrl">Manual RPC URL (optional)</label>
-            <input id="manualRpcUrl" value="http://127.0.0.1:8545" placeholder="http://127.0.0.1:8545" />
-            <div style="height:8px;"></div>
-            <label for="manualAddress">Wallet address for local unlocked account</label>
-            <input id="manualAddress" placeholder="Paste a Hardhat account address, for example 0x..." />
-            <div style="height:8px;"></div>
-            <label for="manualPrivateKey">Private key (only if the RPC account is locked)</label>
-            <input id="manualPrivateKey" type="password" placeholder="0x..." />
-            <div style="height:10px;"></div>
-            <button id="connectManualBtn" class="ghost">Connect By Address Or Key</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <span class="pill">Step 2: Deploy Contract</span>
-        <div class="row" style="margin-top:10px;">
-          <div>
-            <label for="owners">Owners (comma-separated addresses)</label>
-            <textarea id="owners"></textarea>
-          </div>
-          <div>
-            <label for="threshold">Required approvals</label>
-            <input id="threshold" type="number" min="1" value="2" />
-            <div style="height:10px;"></div>
-            <button id="deployBtn">Deploy BasicMultiSig</button>
-          </div>
-        </div>
-        <p id="contractAddress" class="mono">Contract: not deployed</p>
-      </div>
-
-      <div class="card">
-        <span class="pill">Step 3: Actions</span>
-        <div class="row" style="margin-top:10px;">
-          <div class="inline">
+        <section class="panel">
+          <div class="step">Step 1: Connect Wallet</div>
+          <div class="grid-2">
             <div>
-              <label for="fundEth">Fund contract (ETH)</label>
-              <input id="fundEth" value="1.0" />
+              <p id="account" class="mono">Wallet: not connected</p>
             </div>
-            <button id="fundBtn">Fund</button>
-          </div>
-          <div class="inline">
             <div>
-              <label for="txIdRefresh">Tx Id to inspect</label>
-              <input id="txIdRefresh" value="0" />
+              <div class="note">Network mode: localhost:8545</div>
+              <div class="grid-2">
+                <button id="connectBtn" class="btn-teal">Connect MetaMask</button>
+                <button id="connectLocalBtn" class="btn-white">Connect Local Node</button>
+              </div>
             </div>
-            <button id="refreshBtn" class="ghost">Refresh Tx</button>
           </div>
-        </div>
 
-        <div class="row" style="margin-top:10px;">
-          <div>
-            <label for="to">Submit: recipient</label>
-            <input id="to" placeholder="0x..." />
+          <div class="advanced">
+            <details>
+              <summary>Advanced Local Connection</summary>
+              <p class="advanced-title" style="margin-top: 8px;">Manual RPC / Account</p>
+              <div class="grid-2">
+                <div class="field">
+                  <label for="manualRpcUrl">Manual RPC URL</label>
+                  <input id="manualRpcUrl" value="http://127.0.0.1:8545" placeholder="http://127.0.0.1:8545" />
+                </div>
+                <div class="field">
+                  <label for="manualAddress">Wallet Address</label>
+                  <input id="manualAddress" placeholder="0x..." />
+                </div>
+              </div>
+              <div class="field" style="margin-top: 8px;">
+                <label for="manualPrivateKey">Private Key (optional)</label>
+                <input id="manualPrivateKey" type="password" placeholder="0x..." />
+              </div>
+              <div style="margin-top: 8px;">
+                <button id="connectManualBtn" class="btn-white">Connect By Address Or Key</button>
+              </div>
+            </details>
           </div>
-          <div>
-            <label for="valueEth">Submit: value (ETH)</label>
-            <input id="valueEth" value="0.1" />
-          </div>
-        </div>
-        <div class="row" style="margin-top:10px;">
-          <div>
-            <label for="data">Submit: data (hex)</label>
-            <input id="data" value="0x" />
-          </div>
-          <div>
-            <label for="submitTxId">Approve/Execute txId</label>
-            <input id="submitTxId" value="0" />
-          </div>
-        </div>
-        <div class="row" style="margin-top:10px;">
-          <button id="submitBtn" class="alt">Submit Transaction</button>
-          <button id="approveBtn">Approve Transaction</button>
-        </div>
-        <div class="row" style="margin-top:10px;">
-          <button id="executeBtn">Execute Transaction</button>
-          <button id="switchOwnerBtn" class="ghost">Switch Active Account</button>
-        </div>
-      </div>
+        </section>
 
-      <div class="card">
-        <span class="pill">Logs</span>
-        <pre id="log"></pre>
+        <section class="panel">
+          <div class="step">Step 2: Deploy Contract</div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="owners">Owners (comma-separated addresses)</label>
+              <textarea id="owners"></textarea>
+            </div>
+            <div>
+              <div class="field">
+                <label for="threshold">Required approvals</label>
+                <input id="threshold" type="number" min="1" value="2" />
+              </div>
+              <div style="margin-top: 8px;">
+                <button id="deployBtn" class="btn-teal btn-wide">Deploy BasicMultiSig</button>
+              </div>
+            </div>
+          </div>
+          <p id="contractAddress" class="mono">Contract: not deployed</p>
+        </section>
+
+        <section class="panel">
+          <div class="step">Step 3: Actions</div>
+          <div class="grid-2">
+            <div class="row-action">
+              <div class="field">
+                <label for="fundEth">Fund contract (ETH)</label>
+                <input id="fundEth" value="1.0" />
+              </div>
+              <button id="fundBtn" class="btn-teal">Fund</button>
+            </div>
+            <div class="row-action">
+              <div class="field">
+                <label for="txIdRefresh">Tx Id to inspect</label>
+                <input id="txIdRefresh" value="0" />
+              </div>
+              <button id="refreshBtn" class="btn-white">Refresh Tx</button>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top: 8px;">
+            <div class="field">
+              <label for="to">Submit: recipient</label>
+              <input id="to" placeholder="0x..." />
+            </div>
+            <div class="field">
+              <label for="valueEth">Submit: value (ETH)</label>
+              <input id="valueEth" value="0.1" />
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top: 8px;">
+            <div class="field">
+              <label for="data">Submit: data (hex)</label>
+              <input id="data" value="0x" />
+            </div>
+            <div class="field">
+              <label for="submitTxId">Approve/Execute txId</label>
+              <input id="submitTxId" value="0" />
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top: 8px;">
+            <button id="submitBtn" class="btn-gold btn-wide">Submit Transaction</button>
+            <button id="approveBtn" class="btn-teal btn-wide">Approve Transaction</button>
+          </div>
+
+          <div class="grid-2" style="margin-top: 8px;">
+            <button id="executeBtn" class="btn-teal btn-wide">Execute Transaction</button>
+            <button id="switchOwnerBtn" class="btn-white btn-wide">Switch Active Account</button>
+          </div>
+
+          <div class="quick-grid">
+            <div class="quick-card"><span class="quick-icon"></span>Connect Wallet</div>
+            <div class="quick-card"><span class="quick-icon"></span>Deploy Contract</div>
+            <div class="quick-card"><span class="quick-icon"></span>Submit Transaction</div>
+            <div class="quick-card"><span class="quick-icon"></span>Approve Transaction</div>
+            <div class="quick-card"><span class="quick-icon"></span>Execute Transaction</div>
+            <div class="quick-card"><span class="quick-icon"></span>View Transactions and Events</div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="step">Logs</div>
+          <pre id="log"></pre>
+        </section>
       </div>
     </div>
 
